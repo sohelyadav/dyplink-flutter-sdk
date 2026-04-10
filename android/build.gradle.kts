@@ -1,11 +1,12 @@
 group = "com.dyplink.dyplink"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 buildscript {
     val kotlinVersion = "2.2.20"
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 
     dependencies {
@@ -18,6 +19,17 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Pulls the locally-published dyplink-android-sdk artifacts.
+        //
+        // DEV WORKFLOW: before running the example app or a consumer app,
+        // publish the native SDK to ~/.m2 via:
+        //
+        //   cd ../../dyplink-android-sdk
+        //   ./gradlew publishToMavenLocal
+        //
+        // Once dyplink-android-sdk is published to Maven Central this
+        // mavenLocal() entry can be removed.
+        mavenLocal()
     }
 }
 
@@ -58,9 +70,7 @@ android {
             isIncludeAndroidResources = true
             all {
                 it.useJUnitPlatform()
-
                 it.outputs.upToDateWhen { false }
-
                 it.testLogging {
                     events("passed", "skipped", "failed", "standardOut", "standardError")
                     showStandardStreams = true
@@ -71,6 +81,19 @@ android {
 }
 
 dependencies {
+    // ── Native Dyplink SDK (pulled from mavenLocal during dev) ──────────────
+    // See the `mavenLocal()` note above for publishing instructions.
+    val dyplinkSdkVersion = "0.1.0"
+    api("com.dyplink:dyplink-core:$dyplinkSdkVersion")
+    api("com.dyplink:dyplink-push:$dyplinkSdkVersion")
+    api("com.dyplink:dyplink-banners:$dyplinkSdkVersion")
+    api("com.dyplink:dyplink-messages:$dyplinkSdkVersion")
+
+    // ── Coroutines (needed to bridge suspend SDK methods into Pigeon callbacks)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // ── Test ────────────────────────────────────────────────────────────────
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 }

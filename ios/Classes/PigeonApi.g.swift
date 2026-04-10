@@ -772,7 +772,10 @@ class PigeonApiPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol DyplinkHostApi {
   /// Forwards to `Dyplink.init(context, DyplinkConfig)`. Idempotent.
-  func init(config: DyplinkConfigDto) throws
+  ///
+  /// Named `initialize` (not `init`) because `init` is a Swift reserved
+  /// keyword that Pigeon's Swift codegen can't escape correctly.
+  func initialize(config: DyplinkConfigDto) throws
   /// `Dyplink.isInitialized`.
   func isInitialized() throws -> Bool
   /// `Dyplink.distinctId`. Throws `PlatformException(NOT_INITIALIZED)` if not init'd.
@@ -809,20 +812,23 @@ class DyplinkHostApiSetup {
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: DyplinkHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
     /// Forwards to `Dyplink.init(context, DyplinkConfig)`. Idempotent.
-    let initChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.dyplink.DyplinkHostApi.init\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    ///
+    /// Named `initialize` (not `init`) because `init` is a Swift reserved
+    /// keyword that Pigeon's Swift codegen can't escape correctly.
+    let initializeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.dyplink.DyplinkHostApi.initialize\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      initChannel.setMessageHandler { message, reply in
+      initializeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
         let configArg = args[0] as! DyplinkConfigDto
         do {
-          try api.init(config: configArg)
+          try api.initialize(config: configArg)
           reply(wrapResult(nil))
         } catch {
           reply(wrapError(error))
         }
       }
     } else {
-      initChannel.setMessageHandler(nil)
+      initializeChannel.setMessageHandler(nil)
     }
     /// `Dyplink.isInitialized`.
     let isInitializedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.dyplink.DyplinkHostApi.isInitialized\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
@@ -1041,8 +1047,9 @@ class DyplinkHostApiSetup {
 ///
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol DyplinkPushHostApi {
-  /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.init` first.
-  func init() throws
+  /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.initialize` first.
+  /// Named `initialize` (not `init`) — see [DyplinkHostApi.initialize] for why.
+  func initialize() throws
   /// `DyplinkPush.isInitialized`.
   func isInitialized() throws -> Bool
   /// `DyplinkPush.isRegistered`.
@@ -1061,19 +1068,20 @@ class DyplinkPushHostApiSetup {
   /// Sets up an instance of `DyplinkPushHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: DyplinkPushHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.init` first.
-    let initChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.dyplink.DyplinkPushHostApi.init\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.initialize` first.
+    /// Named `initialize` (not `init`) — see [DyplinkHostApi.initialize] for why.
+    let initializeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.dyplink.DyplinkPushHostApi.initialize\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      initChannel.setMessageHandler { _, reply in
+      initializeChannel.setMessageHandler { _, reply in
         do {
-          try api.init()
+          try api.initialize()
           reply(wrapResult(nil))
         } catch {
           reply(wrapError(error))
         }
       }
     } else {
-      initChannel.setMessageHandler(nil)
+      initializeChannel.setMessageHandler(nil)
     }
     /// `DyplinkPush.isInitialized`.
     let isInitializedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.dyplink.DyplinkPushHostApi.isInitialized\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)

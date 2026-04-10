@@ -340,7 +340,10 @@ class InAppMessageDto {
 @HostApi()
 abstract class DyplinkHostApi {
   /// Forwards to `Dyplink.init(context, DyplinkConfig)`. Idempotent.
-  void init(DyplinkConfigDto config);
+  ///
+  /// Named `initialize` (not `init`) because `init` is a Swift reserved
+  /// keyword that Pigeon's Swift codegen can't escape correctly.
+  void initialize(DyplinkConfigDto config);
 
   /// `Dyplink.isInitialized`.
   bool isInitialized();
@@ -399,8 +402,9 @@ abstract class DyplinkHostApi {
 /// Push module bridge — forwards to `com.dyplink.push.DyplinkPush`.
 @HostApi()
 abstract class DyplinkPushHostApi {
-  /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.init` first.
-  void init();
+  /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.initialize` first.
+  /// Named `initialize` (not `init`) — see [DyplinkHostApi.initialize] for why.
+  void initialize();
 
   /// `DyplinkPush.isInitialized`.
   bool isInitialized();

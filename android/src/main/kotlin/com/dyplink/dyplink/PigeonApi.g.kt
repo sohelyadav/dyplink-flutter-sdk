@@ -699,8 +699,13 @@ private open class PigeonApiPigeonCodec : StandardMessageCodec() {
  * Generated interface from Pigeon that represents a handler of messages from Flutter.
  */
 interface DyplinkHostApi {
-  /** Forwards to `Dyplink.init(context, DyplinkConfig)`. Idempotent. */
-  fun init(config: DyplinkConfigDto)
+  /**
+   * Forwards to `Dyplink.init(context, DyplinkConfig)`. Idempotent.
+   *
+   * Named `initialize` (not `init`) because `init` is a Swift reserved
+   * keyword that Pigeon's Swift codegen can't escape correctly.
+   */
+  fun initialize(config: DyplinkConfigDto)
   /** `Dyplink.isInitialized`. */
   fun isInitialized(): Boolean
   /** `Dyplink.distinctId`. Throws `PlatformException(NOT_INITIALIZED)` if not init'd. */
@@ -741,13 +746,13 @@ interface DyplinkHostApi {
     fun setUp(binaryMessenger: BinaryMessenger, api: DyplinkHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.dyplink.DyplinkHostApi.init$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.dyplink.DyplinkHostApi.initialize$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
             val configArg = args[0] as DyplinkConfigDto
             val wrapped: List<Any?> = try {
-              api.init(configArg)
+              api.initialize(configArg)
               listOf(null)
             } catch (exception: Throwable) {
               wrapError(exception)
@@ -1001,8 +1006,11 @@ interface DyplinkHostApi {
  * Generated interface from Pigeon that represents a handler of messages from Flutter.
  */
 interface DyplinkPushHostApi {
-  /** `DyplinkPush.init(context)`. Requires `DyplinkHostApi.init` first. */
-  fun init()
+  /**
+   * `DyplinkPush.init(context)`. Requires `DyplinkHostApi.initialize` first.
+   * Named `initialize` (not `init`) — see [DyplinkHostApi.initialize] for why.
+   */
+  fun initialize()
   /** `DyplinkPush.isInitialized`. */
   fun isInitialized(): Boolean
   /** `DyplinkPush.isRegistered`. */
@@ -1024,11 +1032,11 @@ interface DyplinkPushHostApi {
     fun setUp(binaryMessenger: BinaryMessenger, api: DyplinkPushHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.dyplink.DyplinkPushHostApi.init$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.dyplink.DyplinkPushHostApi.initialize$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
-              api.init()
+              api.initialize()
               listOf(null)
             } catch (exception: Throwable) {
               wrapError(exception)

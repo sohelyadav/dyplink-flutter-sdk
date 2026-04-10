@@ -807,8 +807,11 @@ class DyplinkHostApi {
   final String pigeonVar_messageChannelSuffix;
 
   /// Forwards to `Dyplink.init(context, DyplinkConfig)`. Idempotent.
-  Future<void> init(DyplinkConfigDto config) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.dyplink.DyplinkHostApi.init$pigeonVar_messageChannelSuffix';
+  ///
+  /// Named `initialize` (not `init`) because `init` is a Swift reserved
+  /// keyword that Pigeon's Swift codegen can't escape correctly.
+  Future<void> initialize(DyplinkConfigDto config) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.dyplink.DyplinkHostApi.initialize$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1190,9 +1193,10 @@ class DyplinkPushHostApi {
 
   final String pigeonVar_messageChannelSuffix;
 
-  /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.init` first.
-  Future<void> init() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.dyplink.DyplinkPushHostApi.init$pigeonVar_messageChannelSuffix';
+  /// `DyplinkPush.init(context)`. Requires `DyplinkHostApi.initialize` first.
+  /// Named `initialize` (not `init`) — see [DyplinkHostApi.initialize] for why.
+  Future<void> initialize() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.dyplink.DyplinkPushHostApi.initialize$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,

@@ -2,6 +2,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Required so the example app can resolve the native dyplink-android-sdk
+        // modules that the plugin depends on. Before running the example, publish
+        // the native SDK via:  (cd ../../dyplink-android-sdk && ./gradlew publishToMavenLocal)
+        mavenLocal()
     }
 }
 

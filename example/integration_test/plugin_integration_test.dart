@@ -1,24 +1,39 @@
-// This is a basic Flutter integration test.
+// Integration tests for the Dyplink Flutter plugin.
 //
-// Since integration tests run in a full Flutter application, they can interact
-// with the host side of a plugin implementation, unlike Dart unit tests.
-//
-// For more information about Flutter integration tests, please see
-// https://flutter.dev/to/integration-testing
-
-import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
+// These run on a real device/emulator against the real native SDK. They
+// exercise the *bridge*, not the SDK's business logic — that's covered
+// by the Android SDK's own tests.
 
 import 'package:dyplink/dyplink.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
-    final Dyplink plugin = Dyplink();
-    final String? version = await plugin.getPlatformVersion();
-    // The version string depends on the host platform running the test, so
-    // just assert that some non-empty string is returned.
-    expect(version?.isNotEmpty, true);
+  testWidgets('isInitialized returns false before init', (tester) async {
+    // On a freshly launched test process, the native SDK hasn't been
+    // initialized yet, so isInitialized() must be false.
+    final initialized = await Dyplink.instance.isInitialized;
+    expect(initialized, isFalse);
+  });
+
+  testWidgets('init -> isInitialized -> reset round-trip', (tester) async {
+    final config = DyplinkConfig.builder(
+      baseUrl: 'https://api.dyplink.example',
+      apiKey: 'test-key',
+      projectId: 'test-project',
+    ).logLevel(DyplinkLogLevel.none).build();
+
+    await Dyplink.instance.init(config);
+    expect(await Dyplink.instance.isInitialized, isTrue);
+
+    final fp = await Dyplink.instance.deviceFingerprint;
+    expect(fp, isNotEmpty);
+
+    // reset() should not throw and distinctId should still be reachable.
+    await Dyplink.instance.reset();
+    final distinct = await Dyplink.instance.distinctId;
+    expect(distinct, isNotEmpty);
   });
 }
